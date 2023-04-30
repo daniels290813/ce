@@ -17,6 +17,26 @@ jobs:
       - name: Run ah lint
         working-directory: ./charts/mlrun-ce
         run: ah lint
+  ssh:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+    - name: Extract private key
+      run: echo "${{ secrets.BASTIONSS }}" > mlrun.pem
+    - name: Set permissions on key
+      run: chmod 400 mlrun.pem
+    - name: Install sshpass
+      run: sudo apt-get install -y sshpass
+    - name: Run commands on remote machine
+      run: |
+        echo $(ls); echo $(pwd);
+        #sshpass ssh -o StrictHostKeyChecking=no -i  mlrun.pem ${{ secrets.USERNAME }}@${{ secrets.IP }} <<EOF
+        #kubectl -n mlrun get pods;
+        #EOF
+        #rm -rf mlrun.pem
+        
+  
   # commented out for now, takes too long to pull images
   # perhaps we can invoke it via workflow dispatch or as a nightly job
   # test:
