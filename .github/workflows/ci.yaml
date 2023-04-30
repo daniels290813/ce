@@ -25,7 +25,7 @@ jobs:
     - name: Extract private key
       run: echo "${{ secrets.BASTIONSS }}" > mlrun.pem
     - name: Copy Chart
-      run: scp /home/runner/work/ce ${{ secrets.USERNAME }}@${{ secrets.IP }}:ce
+      run: scp /home/runner/work/ce "${{ secrets.USERNAME }}"@"${{ secrets.IP }}":ce
     - name: Set permissions on key
       run: chmod 400 mlrun.pem
     - name: Install sshpass
