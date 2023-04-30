@@ -24,8 +24,9 @@ jobs:
       uses: actions/checkout@v2
     - name: Extract private key
       run: echo "${{ secrets.BASTIONSS }}" > mlrun.pem
-    - name: Copy Chart
-      run: scp /home/runner/work/ce "${{ secrets.USERNAME }}"@"${{ secrets.IP }}":ce
+    - name: Copy folder to remote machine
+      run: scp -r -i mlrun.pem /home/runner/work/ce ${{ secrets.USERNAME }}@${{ secrets.IP }}:ce
+#      run: scp /home/runner/work/ce "${{ secrets.USERNAME }}"@"${{ secrets.IP }}":ce
     - name: Set permissions on key
       run: chmod 400 mlrun.pem
     - name: Install sshpass
