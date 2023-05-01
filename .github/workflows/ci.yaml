@@ -39,11 +39,11 @@ jobs:
         ls;
         pwd;
         echo Deleting mlrun namepsace;
-        kubectl delete namespace mlrun 2>/dev/null;
-        echo Creating mlrun helm from copied folder using make;
-        cd ce/ce;
-        make;
-        echo Reinstalling Community Edition;
+        kubectl delete namespace mlrun 2>/dev/null
+        echo "Creating mlrun helm from copied folder using make"
+        cd ce/ce
+        make
+        echo "einstalling Community Edition"
         helm install mlrun-ce --namespace ${NAMESPACE} \
         --set minio.resources.requests.memory="128Mi" \
         --set  jupyterNotebook.persistence.size="1Gi" \
@@ -58,6 +58,7 @@ jobs:
         --set global.externalHostAddress=$(minikube ip)  \
         --set nuclio.dashboard.externalIPAddresses[0]=$(minikube ip)  \
         --wait --debug --timeout=1h mlrun/mlrun-ce --version 0.6.0-rc1
+        echo "einstalling Community Edition debug"
         EOF
         rm -rf mlrun.pem
         
