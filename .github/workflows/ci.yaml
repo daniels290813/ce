@@ -32,10 +32,26 @@ jobs:
       run: scp -r -o StrictHostKeyChecking=no -i mlrun.pem  /home/runner/work/ce ${{ secrets.USERNAME }}@${{ secrets.IP }}:mytemp
     - name: Run commands on remote machine
       run: |
-        echo $(ls); echo $(pwd);
         sshpass ssh -o StrictHostKeyChecking=no -i  mlrun.pem ${{ secrets.USERNAME }}@${{ secrets.IP }} <<EOF
-        echo $(ls); echo $(pwd); echo $(which ce)
-        kubectl -n mlrun get pods;
+        echo Deleting mlrun namepsace;
+        kubectl delete namespace mlrun;
+        echo Creating mlrun helm from copied folder using make;
+        make;
+        echo Reinstalling Community Edition;
+        helm install mlrun-ce --namespace ${NAMESPACE} \
+        --set minio.resources.requests.memory="128Mi" \
+        --set  jupyterNotebook.persistence.size="1Gi" \
+        --set  mlrun.db.persistence.size="1Gi" \
+        --set  mlrun.api.persistence.size="1Gi" \
+        --set  mpi-operator.deployment.create="false" \
+        --set  mlrun.httpDB.dbType="sqlite" \
+        --set  mlrun.httpDB.dirPath="/mlrun/db" \
+        --set  mlrun.httpDB.dsn="sqlite:////mlrun/db/mlrun.db?check_same_thread=false"  \
+        --set  mlrun.httpDB.oldDsn=""  \
+        --set global.registry.url=$(minikube ip):5000  --set global.registry.secretName=""   \
+        --set global.externalHostAddress=$(minikube ip)  \
+        --set nuclio.dashboard.externalIPAddresses[0]=$(minikube ip)  \
+        --wait --debug --timeout=1h mlrun/mlrun-ce --version 0.6.0-rc1
         EOF
         rm -rf mlrun.pem
         
