@@ -74,16 +74,19 @@ jobs:
         # TO-DO add demos execution
         ##########################
         # RUNNING DEMOS FROM JUPYTER POD
-        echo Creating script to run demos;
+        echo getting jupyter service;
         jupyter_service=$(kubectl -n mlrun get pods --no-headers -o custom-columns=":metadata.name"|grep jupyter)
         echo $jupyter_service
+        echo Creating script to run demos;
         echo "echo Running CE supported notebooks;
+              echo $(ls);
+              echo $(pwd);
               echo news-article-nlp;
-              cd home/jovyan/demos/news-article-nlp;
+              cd /home/jovyan/demos/news-article-nlp;
               jupyter nbconvert --to script news_article_nlp.ipynb;
               ipython news_article_nlp.py;
               echo mask-detection;
-              cd home/jovyan/demos/mask-detection;
+              cd /home/jovyan/demos/mask-detection;
               jupyter nbconvert --to script 1-training-and-evaluation.ipynb;
               ipython 1-training-and-evaluation.py;
               jupyter nbconvert --to script 2-serving.ipynb;
