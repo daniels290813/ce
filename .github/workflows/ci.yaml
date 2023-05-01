@@ -45,6 +45,8 @@ jobs:
         
         echo Deleting mlrun namepsace;
         kubectl delete namespace mlrun 2>/dev/null
+        echo helm dependency build;
+        helm dependency build
         echo create mlrun namepsace;
         kubectl create namespace mlrun
         
