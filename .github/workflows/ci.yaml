@@ -27,8 +27,7 @@ jobs:
     - name: Set permissions on key
       run: chmod 400 mlrun.pem
     - name: Copy folder to remote machine
-      run: scp -r -i mlrun.pem /home/runner/work/ce/ ${{ secrets.USERNAME }}@${{ secrets.IP }}:"${{ secrets.USERNAME }}@${{ secrets.IP }}/ce/"
-#      run: scp -r -i mlrun.pem /home/runner/work/ce ${{ secrets.USERNAME }}@${{ secrets.IP }}:ce
+      run: scp -r -i mlrun.pem /home/runner/work/ce ${{ secrets.USERNAME }}@${{ secrets.IP }}:ce
     - name: Install sshpass
       run: sudo apt-get install -y sshpass
     - name: Run commands on remote machine
