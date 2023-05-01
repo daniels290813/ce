@@ -26,7 +26,7 @@ jobs:
       run: echo "${{ secrets.BASTIONSS }}" > mlrun.pem
     - name: Copy folder to remote machine
 #       
-      run: scp -r -i mlrun.pem /home/runner/work/ce/ ${{ secrets.REMOTE_USERNAME }}@${{ secrets.REMOTE_HOSTNAME }}:"${{ secrets.REMOTE_USERNAME }}@${{ secrets.REMOTE_HOSTNAME }}/ce/"
+      run: scp -r -i mlrun.pem /home/runner/work/ce/ ${{ secrets.USERNAME }}@${{ secrets.IP }}:"${{ secrets.USERNAME }}@${{ secrets.IP }}/ce/"
 #      run: scp -r -i mlrun.pem /home/runner/work/ce ${{ secrets.USERNAME }}@${{ secrets.IP }}:ce
 #      run: scp /home/runner/work/ce "${{ secrets.USERNAME }}"@"${{ secrets.IP }}":ce
     - name: Set permissions on key
