@@ -29,12 +29,12 @@ jobs:
     - name: Install sshpass
       run: sudo apt-get install -y sshpass
     - name: Copy folder to remote machine
-      run: scp -r -o StrictHostKeyChecking=no -i mlrun.pem  /home/runner/work/ce ${{ secrets.USERNAME }}@${{ secrets.IP }}:/home/${{ secrets.USERNAME }}/ce
+      run: scp -r -o StrictHostKeyChecking=no -i mlrun.pem  /home/runner/work/ce ${{ secrets.USERNAME }}@${{ secrets.IP }}:ce
     - name: Run commands on remote machine
       run: |
         echo $(ls); echo $(pwd);
         sshpass ssh -o StrictHostKeyChecking=no -i  mlrun.pem ${{ secrets.USERNAME }}@${{ secrets.IP }} <<EOF
-        echo $(ls); echo $(pwd);
+        echo $(ls); echo $(pwd); echo $(which ce)
         kubectl -n mlrun get pods;
         EOF
         rm -rf mlrun.pem
