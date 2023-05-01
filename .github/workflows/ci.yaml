@@ -28,6 +28,8 @@ jobs:
       run: chmod 400 mlrun.pem
     - name: Install sshpass
       run: sudo apt-get install -y sshpass
+    - name: delete cached host key
+    - run: ssh-keygen -R ${{ secrets.IP }}
     - name: Copy folder to remote machine
       run: scp -r -i mlrun.pem /home/runner/work/ce ${{ secrets.USERNAME }}@${{ secrets.IP }}:ce
     - name: Run commands on remote machine
