@@ -29,10 +29,12 @@ jobs:
     - name: Install sshpass
       run: sudo apt-get install -y sshpass
     - name: Copy folder to remote machine
-      run: sudo scp -r -o StrictHostKeyChecking=no -i mlrun.pem  /home/runner/work/ce ${{ secrets.USERNAME }}@${{ secrets.IP }}:mytemp2
+      run: sudo scp -r -o StrictHostKeyChecking=no -i mlrun.pem  /home/runner/work/ce ${{ secrets.USERNAME }}@${{ secrets.IP }}:/home/${{ secrets.USERNAME }}/ce
     - name: Run commands on remote machine
       run: |
         sshpass ssh -o StrictHostKeyChecking=no -i  mlrun.pem ${{ secrets.USERNAME }}@${{ secrets.IP }} <<EOF
+        ls;
+        pwd;
         echo Deleting mlrun namepsace;
         kubectl delete namespace mlrun;
         echo Creating mlrun helm from copied folder using make;
