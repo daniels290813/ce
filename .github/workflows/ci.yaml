@@ -45,8 +45,8 @@ jobs:
         
         echo Deleting mlrun namepsace;
         kubectl delete namespace mlrun 2>/dev/null
-        echo helm dependency build;
-        helm dependency build
+        echo helm dependency update;
+        helm dependency update
         echo create mlrun namepsace;
         kubectl create namespace mlrun
         
@@ -65,6 +65,7 @@ jobs:
         --set  mlrun.httpDB.oldDsn=""  \
         --wait --debug --timeout=1h .
         echo "Reinstalling Community Edition debug"
+        rm -rf ce 2>/dev/null
         EOF
         rm -rf mlrun.pem
         
