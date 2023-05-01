@@ -36,12 +36,20 @@ jobs:
     - name: Run commands on remote machine
       run: |
         sshpass ssh -o StrictHostKeyChecking=no -i  mlrun.pem ${{ secrets.USERNAME }}@${{ secrets.IP }} <<EOF
+        # CLEANUP
         echo Deleting mlrun namepsace;
         helm uninstall -n mlrun mlrun-ce 2>/dev/null
         echo Deleting mlrun namepsace2;
         helm uninstall -n mlrun monitoring 2>/dev/null
         echo Deleting mlrun namepsace3;
         kubectl delete pv,pvc --all -n mlrun 2>/dev/null
+        # CREATING NEW PV, PVC and setting as default
+        echo "adding pv (local-path)";
+        kubectl apply -f https://raw.githubusercontent.com/rancher/local-path-provisioner/v0.0.24/deploy/local-path-storage.yaml
+        echo removing default storage class if existsif exists (gp2 is the default);
+        kubectl patch storageclass gp2 -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"false"}}}' 2>/dev/null
+        echo making new storageclass as default
+        kubectl patch storageclass local-path -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
         
         cd ce/ce/charts/mlrun-ce
         echo Deleting mlrun namepsace;
