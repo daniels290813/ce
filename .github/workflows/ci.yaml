@@ -43,15 +43,15 @@ jobs:
         echo Deleting mlrun namepsace3;
         kubectl delete pv,pvc --all -n mlrun 2>/dev/null
         
+        cd ce/ce/charts/mlrun-ce
         echo Deleting mlrun namepsace;
         kubectl delete namespace mlrun 2>/dev/null
         echo helm dependency update;
         helm dependency update
         echo create mlrun namepsace;
         kubectl create namespace mlrun
-        
         echo "Creating mlrun helm from copied folder using make"
-        cd ce/ce/charts/mlrun-ce
+        
         echo "einstalling Community Edition"
         helm install mlrun-ce --namespace ${NAMESPACE} \
         --set minio.resources.requests.memory="128Mi" \
