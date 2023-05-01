@@ -73,6 +73,7 @@ jobs:
         --set  mlrun.httpDB.oldDsn=""  \
         --wait --debug --timeout=1h .
         echo "Reinstalling Community Edition debug"
+        cd;
         rm -rf ce 2>/dev/null
         EOF
         rm -rf mlrun.pem
