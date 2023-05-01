@@ -36,7 +36,7 @@ jobs:
         ls;
         pwd;
         echo Deleting mlrun namepsace;
-        kubectl delete namespace mlrun;
+        kubectl delete namespace mlrun 2>/dev/null;
         echo Creating mlrun helm from copied folder using make;
         cd ce;
         make;
