@@ -61,6 +61,7 @@ jobs:
         helm dependency update
         echo "create mlrun namepsace"
         kubectl create namespace mlrun        
+        echo "k8s namespaces - $(kubectl get namespace)"
         echo "installing community edition"
         helm install mlrun-ce --namespace mlrun \
         --set minio.resources.requests.memory="128Mi" \
@@ -73,9 +74,12 @@ jobs:
         --set  mlrun.httpDB.dsn="sqlite:////mlrun/db/mlrun.db?check_same_thread=false"  \
         --set  mlrun.httpDB.oldDsn=""  \
         --wait --debug --timeout=1h .
-        sleep 30
+        echo "sleeping"
+        sleep 90
 
         # RUNNING DEMOS FROM JUPYTER POD
+        echo "k8s get pods"
+        kubectl -n mlrun get pods
         jupyter_service=$(kubectl -n mlrun get pods --no-headers -o custom-columns=":metadata.name"|grep jupyter)
         echo "JUPYTER : $jupyter_service"
         echo $(kubectl -n mlrun get pods)
