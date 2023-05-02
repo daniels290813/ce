@@ -36,30 +36,32 @@ jobs:
     - name: Run commands on remote machine
       run: |
         sshpass ssh -o StrictHostKeyChecking=no -i  mlrun.pem ${{ secrets.USERNAME }}@${{ secrets.IP }} <<EOF
+        
         # CLEANUP
-        echo Deleting mlrun namepsace;
+        echo "helm uninstall mlrun-ce"
         helm uninstall -n mlrun mlrun-ce 2>/dev/null
-        echo Deleting mlrun namepsace2;
+        echo "helm uninstall monitoring"
         helm uninstall -n mlrun monitoring 2>/dev/null
-        echo Deleting mlrun namepsace3;
+        echo "delete pv, pvc from mlrun"
         kubectl delete pv,pvc --all -n mlrun 2>/dev/null
+        
         # CREATING NEW PV, PVC and setting as default
-        echo "adding pv (local-path)";
+        echo "creating local storage";
         kubectl apply -f https://raw.githubusercontent.com/rancher/local-path-provisioner/v0.0.24/deploy/local-path-storage.yaml
-        echo "removing default storage class if existsif exists (gp2 is the default)";
+        echo "removing default storage class if existsif exists (gp2 is the default on new ce)"
         kubectl patch storageclass gp2 -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"false"}}}' 2>/dev/null
-        echo making new storageclass as default;
+        echo "making new storageclass as default"
         kubectl patch storageclass local-path -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
-        echo Deleting mlrun namepsace;
+        echo "deleting mlrun namepsace";
         kubectl delete namespace mlrun 2>/dev/null
         
         # CE INSTALLATION
         cd ce/ce/charts/mlrun-ce
-        echo helm dependency update;
+        echo "helm dependency update"
         helm dependency update
-        echo create mlrun namepsace;
+        echo "create mlrun namepsace"
         kubectl create namespace mlrun        
-        echo "installing Community Edition"
+        echo "installing community edition"
         helm install mlrun-ce --namespace ${NAMESPACE} \
         --set minio.resources.requests.memory="128Mi" \
         --set  jupyterNotebook.persistence.size="1Gi" \
@@ -71,22 +73,20 @@ jobs:
         --set  mlrun.httpDB.dsn="sqlite:////mlrun/db/mlrun.db?check_same_thread=false"  \
         --set  mlrun.httpDB.oldDsn=""  \
         --wait --debug --timeout=1h .
-        # TO-DO add demos execution
-        ##########################
+
         # RUNNING DEMOS FROM JUPYTER POD
-        echo getting jupyter service;
         jupyter_service=$(kubectl -n mlrun get pods --no-headers -o custom-columns=":metadata.name"|grep jupyter)
-        echo $jupyter_service
-        echo Creating script to run demos;
+        echo "JUPYTER : $jupyter_service"
+        echo "creating script that run demos"
         echo "echo Running CE supported notebooks;
               echo $(ls);
               echo $(pwd);
               echo news-article-nlp;
-              cd /home/jovyan/demos/news-article-nlp;
+              cd demos/news-article-nlp;
               jupyter nbconvert --to script news_article_nlp.ipynb;
               ipython news_article_nlp.py;
               echo mask-detection;
-              cd /home/jovyan/demos/mask-detection;
+              cd ../mask-detection;
               jupyter nbconvert --to script 1-training-and-evaluation.ipynb;
               ipython 1-training-and-evaluation.py;
               jupyter nbconvert --to script 2-serving.ipynb;
@@ -95,11 +95,10 @@ jobs:
               ipython 3-automatic-pipeline.py;
               echo All notebooks ran successfully; " > demos_script.sh
               
-        echo COPYING DEMO SCRIPT TO JUPYTER POD;
-        echo "Copying demos running script to jupyter pod"
-        kubectl cp $(pwd)/demos_script.sh mlrun/$jupyter_service:/home/jovyan/demos_script.sh
-        echo "Running demos script"
-        kubectl exec -n mlrun $jupyter_service -- bash /home/jovyan/demos_script.sh
+        echo "copying demos running script to jupyter"
+        kubectl cp demos_script.sh mlrun/$jupyter_service:demos_script.sh
+        echo "running demos script"
+        kubectl exec -n mlrun $jupyter_service -- bash demos_script.sh
         echo "CE demos ci finished"
         
         ###########################
