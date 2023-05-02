@@ -68,9 +68,9 @@ jobs:
         --set  mlrun.httpDB.dirPath="/mlrun/db" \
         --set  mlrun.httpDB.dsn="sqlite:////mlrun/db/mlrun.db?check_same_thread=false"  \
         --set  mlrun.httpDB.oldDsn=""  \
-        --set global.registry.url=$host_ip:5000  --set global.registry.secretName=""   \
-        --set global.externalHostAddress=$host_ip  \
-        --set nuclio.dashboard.externalIPAddresses[0]=$host_ip  \
+        --set global.registry.url=${{ secrets.INTERNAL_IP }}:5000  --set global.registry.secretName=""   \
+        --set global.externalHostAddress=${{ secrets.INTERNAL_IP }}  \
+        --set nuclio.dashboard.externalIPAddresses[0]=${{ secrets.INTERNAL_IP }}  \
         --wait --debug --timeout=1h .
 
         # RUNNING DEMOS FROM JUPYTER POD
