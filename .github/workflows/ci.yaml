@@ -78,11 +78,9 @@ jobs:
         sleep 90
 
         # RUNNING DEMOS FROM JUPYTER POD
-        echo "k8s get pods"
         kubectl -n mlrun get pods
-        jupyter_service=$(kubectl -n mlrun get pods --no-headers -o custom-columns=":metadata.name"|grep jupyter)
+        export jupyter_service=$(kubectl -n mlrun get pods --no-headers -o custom-columns=":metadata.name"|grep jupyter)
         echo "JUPYTER : $jupyter_service"
-        echo $(kubectl -n mlrun get pods)
         echo "creating script that run demos"
         echo "echo Running CE supported notebooks;
               echo $(ls);
