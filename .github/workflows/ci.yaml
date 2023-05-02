@@ -32,7 +32,7 @@ jobs:
     - name: Install sshpass
       run: sudo apt-get install -y sshpass
     - name: Copy folder to remote machine
-      run: sudo scp -r -o StrictHostKeyChecking=no -i mlrun.pem  /home/runner/work/ce ${{ secrets.USERNAME }}@${{ secrets.IP }}:ce
+      run: sudo scp -r -o StrictHostKeyChecking=no -i mlrun.pem  /home/runner/work/ce ${{ secrets.USERNAME }}@${{ secrets.IP }}:/home/ubuntu/ce
     - name: Run commands on remote machine
       run: |
         sshpass ssh -o StrictHostKeyChecking=no -i  mlrun.pem ${{ secrets.USERNAME }}@${{ secrets.IP }} <<EOF
