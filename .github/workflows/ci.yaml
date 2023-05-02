@@ -78,15 +78,15 @@ jobs:
         # RUNNING DEMOS FROM JUPYTER POD
         kubectl -n mlrun get pods
         kubectl -n mlrun get pods --no-headers -o custom-columns=":metadata.name"|grep jupyter| awk '{print $1}'
-        kubectl -n mlrun get pods -o name|grep jupyter|head -n 1| cut -d / -f 2 > pod_name.txt
-        jupyter_service=$(<pod_name.txt)
-        #jupyter_service=$(kubectl -n mlrun get pods --no-headers -o custom-columns=":metadata.name"|grep jupyter| awk '{print $1}')
-        #echo "JUPYTER : $jupyter_service"
+        kubectl -n mlrun get pods -o name|grep jupyter|head -n 1| cut -d / -f 2 
+        
+        jupyter_service='$(kubectl -n mlrun get pods --no-headers -o custom-columns=":metadata.name"|grep jupyter| awk "{print $1}")'
+        echo 'JUPYTER : $jupyter_service'
         #jupyter_service=$(kubectl -n mlrun get pods -o name|grep jupyter|head -n 1| cut -d / -f 2)
-        echo "JUPYTER : $jupyter_service"
+        #echo 'JUPYTER : $jupyter_service'
         
         echo "creating script that run demos"
-        echo "echo Running CE supported notebooks;
+        echo 'echo Running CE supported notebooks;
               echo $(ls);
               echo $(pwd);
               echo news-article-nlp;
@@ -101,11 +101,11 @@ jobs:
               ipython 2-serving.py;
               jupyter nbconvert --to script 3-automatic-pipeline.ipynb;
               ipython 3-automatic-pipeline.py;
-              echo All notebooks ran successfully; " > demos_script.sh
+              echo All notebooks ran successfully; ' > demos_script.sh
               
         echo "copying demos running script to jupyter"
-        echo "mlrun/$jupyter_service:demos_script.sh"
-        kubectl cp demos_script.sh mlrun/$jupyter_service:demos_script.sh
+        echo 'mlrun/$jupyter_service:demos_script.sh'
+        kubectl cp demos_script.sh 'mlrun/$jupyter_service:demos_script.sh'
         echo "running demos script"
         kubectl exec -n mlrun $jupyter_service -- bash demos_script.sh
         echo "CE demos ci finished"
