@@ -48,7 +48,7 @@ jobs:
         # CREATING NEW PV, PVC and setting as default
         echo "creating local storage";
         kubectl apply -f https://raw.githubusercontent.com/rancher/local-path-provisioner/v0.0.24/deploy/local-path-storage.yaml
-        echo "removing default storage class if existsif exists (gp2 is the default on new ce)"
+        echo "removing default storage class (gp2 is the default on new ce)"
         kubectl patch storageclass gp2 -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"false"}}}' 2>/dev/null
         echo "making new storageclass as default"
         kubectl patch storageclass local-path -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
@@ -77,6 +77,7 @@ jobs:
         # RUNNING DEMOS FROM JUPYTER POD
         jupyter_service=$(kubectl -n mlrun get pods --no-headers -o custom-columns=":metadata.name"|grep jupyter)
         echo "JUPYTER : $jupyter_service"
+        echo $(kubectl -n mlrun get pods)
         echo "creating script that run demos"
         echo "echo Running CE supported notebooks;
               echo $(ls);
@@ -96,6 +97,7 @@ jobs:
               echo All notebooks ran successfully; " > demos_script.sh
               
         echo "copying demos running script to jupyter"
+        echo "mlrun/$jupyter_service:demos_script.sh"
         kubectl cp demos_script.sh mlrun/$jupyter_service:demos_script.sh
         echo "running demos script"
         kubectl exec -n mlrun $jupyter_service -- bash demos_script.sh
