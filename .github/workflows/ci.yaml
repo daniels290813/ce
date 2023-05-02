@@ -74,12 +74,10 @@ jobs:
         --set  mlrun.httpDB.dsn="sqlite:////mlrun/db/mlrun.db?check_same_thread=false"  \
         --set  mlrun.httpDB.oldDsn=""  \
         --wait --debug --timeout=1h .
-        echo "sleeping"
-        sleep 90
 
         # RUNNING DEMOS FROM JUPYTER POD
         kubectl -n mlrun get pods
-        export jupyter_service=$(kubectl -n mlrun get pods --no-headers -o custom-columns=":metadata.name"|grep jupyter)
+        export jupyter_service=$(kubectl -n mlrun get pods --no-headers -o custom-columns=":metadata.name"|grep jupyter| awk '{print $1}')
         echo "JUPYTER : $jupyter_service"
         echo "creating script that run demos"
         echo "echo Running CE supported notebooks;
