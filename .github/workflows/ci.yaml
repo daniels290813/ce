@@ -45,13 +45,6 @@ jobs:
         echo "delete pv, pvc from mlrun"
         kubectl delete pv,pvc --all -n mlrun 2>/dev/null
         
-        # CREATING NEW PV, PVC and setting as default
-        echo "creating local storage";
-        kubectl apply -f https://raw.githubusercontent.com/rancher/local-path-provisioner/v0.0.24/deploy/local-path-storage.yaml
-        echo "removing default storage class (gp2 is the default on new ce)"
-        kubectl patch storageclass gp2 -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"false"}}}' 2>/dev/null
-        echo "making new storageclass as default"
-        kubectl patch storageclass local-path -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
         echo "deleting mlrun namepsace";
         kubectl delete namespace mlrun 2>/dev/null
         
@@ -88,8 +81,8 @@ jobs:
         
         echo "creating script that run demos"
         echo "echo Running CE supported notebooks;
-              echo $(ls);
-              echo $(pwd);
+              ls;
+              pwd;
               echo news-article-nlp;
               cd demos/news-article-nlp;
               jupyter nbconvert --to script news_article_nlp.ipynb;
@@ -105,10 +98,10 @@ jobs:
               echo All notebooks ran successfully; " > demos_script.sh
               
         echo "copying demos running script to jupyter"
-        echo "mlrun/\$jupyter_service:demos_script.sh"
-        kubectl cp demos_script.sh mlrun/\$jupyter_service:demos_script.sh
+        echo "mlrun/\$jupyter_service:/home/jovyan/demos_script.sh"
+        kubectl cp demos_script.sh mlrun/\$jupyter_service:/home/jovyan/demos_script.sh
         echo "running demos script"
-        kubectl exec -n mlrun \$jupyter_service -- bash demos_script.sh
+        kubectl exec -n mlrun \$jupyter_service -- bash /home/jovyan/demos_script.sh
         echo "CE demos ci finished"
         
         ###########################
