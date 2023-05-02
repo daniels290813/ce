@@ -48,6 +48,8 @@ jobs:
         echo "deleting mlrun namepsace";
         kubectl delete namespace mlrun 2>/dev/null
         
+        export host_ip=`ifconfig ens5 | grep -i mask | awk '{print $2}'| cut -f2 -d:`
+        
         # CE INSTALLATION
         cd ce/ce/charts/mlrun-ce
         echo "helm dependency update"
@@ -66,6 +68,9 @@ jobs:
         --set  mlrun.httpDB.dirPath="/mlrun/db" \
         --set  mlrun.httpDB.dsn="sqlite:////mlrun/db/mlrun.db?check_same_thread=false"  \
         --set  mlrun.httpDB.oldDsn=""  \
+        --set global.registry.url=$host_ip:5000  --set global.registry.secretName=""   \
+        --set global.externalHostAddress=$host_ip  \
+        --set nuclio.dashboard.externalIPAddresses[0]=$host_ip  \
         --wait --debug --timeout=1h .
 
         # RUNNING DEMOS FROM JUPYTER POD
