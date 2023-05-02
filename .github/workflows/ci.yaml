@@ -78,12 +78,13 @@ jobs:
         # RUNNING DEMOS FROM JUPYTER POD
         kubectl -n mlrun get pods
         kubectl -n mlrun get pods --no-headers -o custom-columns=":metadata.name"|grep jupyter| awk '{print $1}'
-        kubectl -n mlrun get pods -o name|grep jupyter|head -n 1| cut -d / -f 2
+        kubectl -n mlrun get pods -o name|grep jupyter|head -n 1| cut -d / -f 2 > pod_name.txt
+        jupyter_service=$(<pod_name.txt)
+        #jupyter_service=$(kubectl -n mlrun get pods --no-headers -o custom-columns=":metadata.name"|grep jupyter| awk '{print $1}')
+        #echo "JUPYTER : $jupyter_service"
+        #jupyter_service=$(kubectl -n mlrun get pods -o name|grep jupyter|head -n 1| cut -d / -f 2)
+        echo "JUPYTER : $jupyter_service"
         
-        jupyter_service=$(kubectl -n mlrun get pods --no-headers -o custom-columns=":metadata.name"|grep jupyter| awk '{print $1}')
-        echo "JUPYTER : $jupyter_service"
-        jupyter_service=$(kubectl -n mlrun get pods -o name|grep jupyter|head -n 1| cut -d / -f 2)
-        echo "JUPYTER : $jupyter_service"
         echo "creating script that run demos"
         echo "echo Running CE supported notebooks;
               echo $(ls);
@@ -104,9 +105,9 @@ jobs:
               
         echo "copying demos running script to jupyter"
         echo "mlrun/$jupyter_service:demos_script.sh"
-        kubectl cp demos_script.sh mlrun/$(kubectl -n mlrun get pods -o name|grep jupyter|head -n 1| cut -d / -f 2):demos_script.sh
+        kubectl cp demos_script.sh mlrun/$jupyter_service:demos_script.sh
         echo "running demos script"
-        kubectl exec -n mlrun $(kubectl -n mlrun get pods -o name|grep jupyter|head -n 1| cut -d / -f 2) -- bash demos_script.sh
+        kubectl exec -n mlrun $jupyter_service -- bash demos_script.sh
         echo "CE demos ci finished"
         
         ###########################
