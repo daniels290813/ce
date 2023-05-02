@@ -104,9 +104,9 @@ jobs:
               
         echo "copying demos running script to jupyter"
         echo "mlrun/$jupyter_service:demos_script.sh"
-        kubectl cp demos_script.sh mlrun/$jupyter_service:demos_script.sh
+        kubectl cp demos_script.sh mlrun/$(kubectl -n mlrun get pods -o name|grep jupyter|head -n 1| cut -d / -f 2):demos_script.sh
         echo "running demos script"
-        kubectl exec -n mlrun $jupyter_service -- bash demos_script.sh
+        kubectl exec -n mlrun $(kubectl -n mlrun get pods -o name|grep jupyter|head -n 1| cut -d / -f 2) -- bash demos_script.sh
         echo "CE demos ci finished"
         
         ###########################
