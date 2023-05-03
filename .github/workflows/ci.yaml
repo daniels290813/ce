@@ -112,6 +112,18 @@ jobs:
         EOF
         rm -rf mlrun.pem
         
+        # CLEANUP
+        echo "helm uninstall mlrun-ce"
+        helm uninstall -n mlrun mlrun-ce 2>/dev/null
+        echo "helm uninstall monitoring"
+        helm uninstall -n mlrun monitoring 2>/dev/null
+        echo "delete pv, pvc from mlrun"
+        kubectl delete pv,pvc --all -n mlrun 2>/dev/null
+        
+        echo "deleting mlrun namepsace";
+        kubectl delete namespace mlrun 2>/dev/null
+        sleep 60
+        
   
   # commented out for now, takes too long to pull images
   # perhaps we can invoke it via workflow dispatch or as a nightly job
