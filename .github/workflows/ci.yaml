@@ -90,17 +90,13 @@ jobs:
               pwd;
               echo news-article-nlp;
               cd demos/news-article-nlp;
-              #jupyter nbconvert --to script news_article_nlp.ipynb;
-              jupyter nbconvert --execute news_article_nlp.ipynb
-              #ipython news_article_nlp.py;
+              jupyter nbconvert --to notebook --execute news_article_nlp.ipynb --output=news_article_nlp-out.ipynb
               echo mask-detection;
               cd ../mask-detection;
               jupyter nbconvert --to script 1-training-and-evaluation.ipynb;
-              ipython 1-training-and-evaluation.py 
-              jupyter nbconvert --to script 2-serving.ipynb;
-              ipython 2-serving.py;
-              jupyter nbconvert --to script 3-automatic-pipeline.ipynb;
-              ipython 3-automatic-pipeline.py;
+              jupyter nbconvert --to notebook --execute 1-training-and-evaluation.ipynb --output=1-training-and-evaluation-out.ipynb
+              jupyter nbconvert --to notebook --execute 2-serving.ipynb --output=2-serving-out.ipynb
+              jupyter nbconvert --to notebook --execute 3-automatic-pipeline.ipynb --output=3-automatic-pipeline-out.ipynb
               echo All notebooks ran successfully; " > demos_script.sh
               
         echo "copying demos running script to jupyter"
