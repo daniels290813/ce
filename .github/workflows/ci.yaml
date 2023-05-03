@@ -39,14 +39,14 @@ jobs:
         sshpass ssh -o StrictHostKeyChecking=no -i  mlrun.pem ${{ secrets.USERNAME }}@${{ secrets.IP }} <<EOF
         # CLEANUP
         echo "helm uninstall mlrun-ce"
-        helm uninstall -n mlrun mlrun-ce 2>/dev/null
+        helm uninstall -n mlrun mlrun-ce || echo true
         echo "helm uninstall monitoring"
-        helm uninstall -n mlrun monitoring 2>/dev/null
+        helm uninstall -n mlrun monitoring || echo true
         echo "delete pv, pvc from mlrun"
-        kubectl delete pv,pvc --all -n mlrun 2>/dev/null
+        kubectl delete pv,pvc --all -n mlrun || echo true
         
         echo "deleting mlrun namepsace";
-        kubectl delete namespace mlrun 2>/dev/null
+        kubectl delete namespace mlrun || echo true
         
         #export host_ip=`ifconfig ens5 | grep -i mask | awk '{print $2}'| cut -f2 -d:`
         
@@ -114,14 +114,16 @@ jobs:
         
         # CLEANUP
         echo "helm uninstall mlrun-ce"
-        helm uninstall -n mlrun mlrun-ce 2>/dev/null
+        helm uninstall -n mlrun mlrun-ce || echo true
         echo "helm uninstall monitoring"
-        helm uninstall -n mlrun monitoring 2>/dev/null
+        helm uninstall -n mlrun monitoring || echo true
+        
+        sleep 60
         echo "delete pv, pvc from mlrun"
-        kubectl delete pv,pvc --all -n mlrun 2>/dev/null
+        kubectl delete pv,pvc --all -n mlrun || echo true
         
         echo "deleting mlrun namepsace";
-        kubectl delete namespace mlrun 2>/dev/null
+        kubectl delete namespace mlrun || echo true
         sleep 60
         
   
