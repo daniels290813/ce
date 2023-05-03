@@ -90,12 +90,13 @@ jobs:
               pwd;
               echo news-article-nlp;
               cd demos/news-article-nlp;
-              jupyter nbconvert --to script news_article_nlp.ipynb;
-              ipython news_article_nlp.py;
+              #jupyter nbconvert --to script news_article_nlp.ipynb;
+              jupyter nbconvert --execute news_article_nlp.ipynb
+              #ipython news_article_nlp.py;
               echo mask-detection;
               cd ../mask-detection;
               jupyter nbconvert --to script 1-training-and-evaluation.ipynb;
-              ipython 1-training-and-evaluation.py;
+              ipython 1-training-and-evaluation.py 
               jupyter nbconvert --to script 2-serving.ipynb;
               ipython 2-serving.py;
               jupyter nbconvert --to script 3-automatic-pipeline.ipynb;
