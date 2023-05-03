@@ -48,7 +48,7 @@ jobs:
         echo "deleting mlrun namepsace";
         kubectl delete namespace mlrun 2>/dev/null
         
-        export host_ip=`ifconfig ens5 | grep -i mask | awk '{print $2}'| cut -f2 -d:`
+        #export host_ip=`ifconfig ens5 | grep -i mask | awk '{print $2}'| cut -f2 -d:`
         
         # CE INSTALLATION
         cd ce/ce/charts/mlrun-ce
