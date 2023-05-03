@@ -90,7 +90,8 @@ jobs:
               pwd;
               echo news-article-nlp;
               cd demos/news-article-nlp;
-              jupyter execute news_article_nlp.py;
+              jupyter nbconvert --to script news_article_nlp.ipynb;
+              ipython news_article_nlp.py;
               echo mask-detection;
               cd ../mask-detection;
               jupyter nbconvert --to script 1-training-and-evaluation.ipynb;
