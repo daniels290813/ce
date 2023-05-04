@@ -87,8 +87,8 @@ jobs:
         
         # Run the notebook and output the results
         echo "Running notebook..."
-        kubectl exec -n mlrun \$jupyter_service -- jupyter nbconvert --to notebook --execute /home/jovyan/demos/news-article-nlp/news_article_nlp.ipynb --output=/home/jovyan/demos/news-article-nlp/news_article_nlp-out.ipynb
-        
+        kubectl exec -n mlrun \$jupyter_service -- jupyter nbconvert --to notebook --execute /home/jovyan/demos/news-article-nlp/news_article_nlp.ipynb --output=/home/jovyan/demos/news-article-nlp/news_article_nlp-out.ipynb 2>/dev/null
+        echo "done first stage" 
         # Clean up after the notebook run
         # End of SSH commands
         EOF
