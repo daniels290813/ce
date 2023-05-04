@@ -102,7 +102,7 @@ jobs:
         
         # Run the notebook and output the results
         echo "Running notebook..."
-        kubectl exec -n mlrun \$jupyter_service -- jupyter nbconvert --to notebook --execute /home/jovyan/demos/news-article-nlp/1-training-and-evaluation.ipynb --output=/home/jovyan/demos/news-article-nlp/1-training-and-evaluation.ipynb
+        kubectl exec -n mlrun \$jupyter_service -- jupyter nbconvert --to notebook --execute /home/jovyan/demos/mask-detection/1-training-and-evaluation.ipynb --output=/home/jovyan/demos/mask-detection/1-training-and-evaluation.ipynb
           
           # End of SSH commands
         EOF
@@ -115,7 +115,7 @@ jobs:
         
         # Run the notebook and output the results
         echo "Running notebook..."
-        kubectl exec -n mlrun \$jupyter_service -- jupyter nbconvert --to notebook --execute /home/jovyan/demos/news-article-nlp/2-serving.ipynb --output=/home/jovyan/demos/news-article-nlp/2-serving.ipynb
+        kubectl exec -n mlrun \$jupyter_service -- jupyter nbconvert --to notebook --execute /home/jovyan/demos/mask-detection/2-serving.ipynb --output=/home/jovyan/demos/mask-detection/2-serving.ipynb
           
         EOF
     - name: Run demos from Jupyter pod notebook 3-automatic-pipeline.ipynb
@@ -127,14 +127,13 @@ jobs:
         
         # Run the notebook and output the results
         echo "Running notebook..."
-        kubectl exec -n mlrun \$jupyter_service -- jupyter nbconvert --to notebook --execute /home/jovyan/demos/news-article-nlp/3-automatic-pipeline.ipynb --output=/home/jovyan/demos/news-article-nlp/3-automatic-pipeline.ipynb
+        kubectl exec -n mlrun \$jupyter_service -- jupyter nbconvert --to notebook --execute /home/jovyan/demos/mask-detection/3-automatic-pipeline.ipynb --output=/home/jovyan/demos/mask-detection/3-automatic-pipeline.ipynb
         echo "CE demos ci finished"
         cd
         rm -rf ce 2>/dev/null
-          
-                
         # End of SSH commands
         EOF
+        rm -rf mlrun.pem
       
   # commented out for now, takes too long to pull images
   # perhaps we can invoke it via workflow dispatch or as a nightly job
