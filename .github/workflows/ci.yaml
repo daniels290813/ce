@@ -82,12 +82,12 @@ jobs:
       run: |
         sshpass ssh -o StrictHostKeyChecking=no -i mlrun.pem ${{ secrets.USERNAME }}@${{ secrets.IP }} <<EOF
         # Get the name of the Jupyter pod
-        jupyter_service=$(kubectl -n mlrun get pods -o name | grep jupyter | head -n 1 | cut -d / -f 2)
-        echo "Jupyter pod name: $jupyter_service"
+        jupyter_service=\$(kubectl -n mlrun get pods -o name | grep jupyter | head -n 1 | cut -d / -f 2)
+        echo "Jupyter pod name: \$jupyter_service"
         
         # Run the notebook and output the results
         echo "Running notebook..."
-        kubectl exec -n mlrun $jupyter_service -- jupyter nbconvert --to notebook --execute /home/jovyan/demos/news-article-nlp/news_article_nlp.ipynb --output=/home/jovyan/demos/news-article-nlp/news_article_nlp-out.ipynb
+        kubectl exec -n mlrun \$jupyter_service -- jupyter nbconvert --to notebook --execute /home/jovyan/demos/news-article-nlp/news_article_nlp.ipynb --output=/home/jovyan/demos/news-article-nlp/news_article_nlp-out.ipynb
         
         # Clean up after the notebook run
         # End of SSH commands
@@ -97,12 +97,12 @@ jobs:
       run: |
         sshpass ssh -o StrictHostKeyChecking=no -i mlrun.pem ${{ secrets.USERNAME }}@${{ secrets.IP }} <<EOF
         # Get the name of the Jupyter pod
-        jupyter_service=$(kubectl -n mlrun get pods -o name | grep jupyter | head -n 1 | cut -d / -f 2)
-        echo "Jupyter pod name: $jupyter_service"
+        jupyter_service=\$(kubectl -n mlrun get pods -o name | grep jupyter | head -n 1 | cut -d / -f 2)
+        echo "Jupyter pod name: \$jupyter_service"
         
         # Run the notebook and output the results
         echo "Running notebook..."
-        kubectl exec -n mlrun $jupyter_service -- jupyter nbconvert --to notebook --execute /home/jovyan/demos/news-article-nlp/1-training-and-evaluation.ipynb --output=/home/jovyan/demos/news-article-nlp/1-training-and-evaluation.ipynb
+        kubectl exec -n mlrun \$jupyter_service -- jupyter nbconvert --to notebook --execute /home/jovyan/demos/news-article-nlp/1-training-and-evaluation.ipynb --output=/home/jovyan/demos/news-article-nlp/1-training-and-evaluation.ipynb
           
           # End of SSH commands
         EOF
@@ -110,24 +110,24 @@ jobs:
       run: |
         sshpass ssh -o StrictHostKeyChecking=no -i mlrun.pem ${{ secrets.USERNAME }}@${{ secrets.IP }} <<EOF
         # Get the name of the Jupyter pod
-        jupyter_service=$(kubectl -n mlrun get pods -o name | grep jupyter | head -n 1 | cut -d / -f 2)
-        echo "Jupyter pod name: $jupyter_service"
+        jupyter_service=\$(kubectl -n mlrun get pods -o name | grep jupyter | head -n 1 | cut -d / -f 2)
+        echo "Jupyter pod name: \$jupyter_service"
         
         # Run the notebook and output the results
         echo "Running notebook..."
-        kubectl exec -n mlrun $jupyter_service -- jupyter nbconvert --to notebook --execute /home/jovyan/demos/news-article-nlp/2-serving.ipynb --output=/home/jovyan/demos/news-article-nlp/2-serving.ipynb
+        kubectl exec -n mlrun \$jupyter_service -- jupyter nbconvert --to notebook --execute /home/jovyan/demos/news-article-nlp/2-serving.ipynb --output=/home/jovyan/demos/news-article-nlp/2-serving.ipynb
           
         EOF
     - name: Run demos from Jupyter pod notebook 3-automatic-pipeline.ipynb
       run: |
         sshpass ssh -o StrictHostKeyChecking=no -i mlrun.pem ${{ secrets.USERNAME }}@${{ secrets.IP }} <<EOF
         # Get the name of the Jupyter pod
-        jupyter_service=$(kubectl -n mlrun get pods -o name | grep jupyter | head -n 1 | cut -d / -f 2)
-        echo "Jupyter pod name: $jupyter_service"
+        jupyter_service=\$(kubectl -n mlrun get pods -o name | grep jupyter | head -n 1 | cut -d / -f 2)
+        echo "Jupyter pod name: \$jupyter_service"
         
         # Run the notebook and output the results
         echo "Running notebook..."
-        kubectl exec -n mlrun $jupyter_service -- jupyter nbconvert --to notebook --execute /home/jovyan/demos/news-article-nlp/3-automatic-pipeline.ipynb --output=/home/jovyan/demos/news-article-nlp/3-automatic-pipeline.ipynb
+        kubectl exec -n mlrun \$jupyter_service -- jupyter nbconvert --to notebook --execute /home/jovyan/demos/news-article-nlp/3-automatic-pipeline.ipynb --output=/home/jovyan/demos/news-article-nlp/3-automatic-pipeline.ipynb
         echo "CE demos ci finished"
         cd
         rm -rf ce 2>/dev/null
