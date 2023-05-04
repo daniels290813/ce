@@ -79,34 +79,40 @@ jobs:
         EOF
 
 
-    - name: Running demos from Jupyter pod
+    - name: Running demo - 1
       run: |
         sshpass ssh -o StrictHostKeyChecking=no -i  mlrun.pem ${{ secrets.USERNAME }}@${{ secrets.IP }} <<EOF
-        # RUNNING DEMOS FROM JUPYTER POD      
         jupyter_service=\$(kubectl -n mlrun get pods -o name|grep jupyter|head -n 1| cut -d / -f 2)
         echo "JUPYTER : \$jupyter_service"
-        echo "creating script that run demos"
-        echo "echo Running CE supported notebooks;
-              echo news-article-nlp;
-              cd demos/news-article-nlp;
-              jupyter nbconvert --to notebook --execute news_article_nlp.ipynb --output=news_article_nlp-out.ipynb
-              echo mask-detection;
-              cd ../mask-detection;
-              jupyter nbconvert --to notebook --execute 1-training-and-evaluation.ipynb --output=1-training-and-evaluation-out.ipynb
-              jupyter nbconvert --to notebook --execute 2-serving.ipynb --output=2-serving-out.ipynb
-              jupyter nbconvert --to notebook --execute 3-automatic-pipeline.ipynb --output=3-automatic-pipeline-out.ipynb
-              echo All notebooks ran successfully; " > demos_script.sh
-              
-        echo "copying demos running script to jupyter"
-        echo "mlrun/\$jupyter_service:/home/jovyan/demos_script.sh"
-        kubectl cp demos_script.sh mlrun/\$jupyter_service:/home/jovyan/demos_script.sh
-        echo "running demos script"
-        kubectl exec -n mlrun \$jupyter_service -- bash /home/jovyan/demos_script.sh
-        echo "CE demos ci finished"        
+	 echo news-article-nlp;
+        kubectl exec -n mlrun $jupyter_service -- jupyter nbconvert --to notebook --execute /home/jovyan/demos/news-article-nlp/news_article_nlp.ipynb --output=/home/jovyan/demos/news-article-nlp/news_article_nlp-out.ipynb 
+        EOF
+
+
+    - name: Running demo - 2
+      run: |
+        sshpass ssh -o StrictHostKeyChecking=no -i  mlrun.pem ${{ secrets.USERNAME }}@${{ secrets.IP }} <<EOF
+	 echo mask-detection;
+        kubectl exec -n mlrun $jupyter_service -- jupyter nbconvert --to notebook --execute /home/jovyan/demos/mask-detection/1-training-and-evaluation.ipynb --output=/home/jovyan/demos/mask-detection/1-training-and-evaluation-out.ipynb 
+        EOF
+
+
+    - name: Running demo - 3
+      run: |
+        sshpass ssh -o StrictHostKeyChecking=no -i  mlrun.pem ${{ secrets.USERNAME }}@${{ secrets.IP }} <<EOF
+        kubectl exec -n mlrun $jupyter_service -- jupyter nbconvert --to notebook --execute /home/jovyan/demos/mask-detection/2-serving.ipynb --output=/home/jovyan/demos/mask-detection/2-serving-out.ipynb 
+        EOF
+
+
+    - name: Running demo - 4
+      run: |
+        sshpass ssh -o StrictHostKeyChecking=no -i  mlrun.pem ${{ secrets.USERNAME }}@${{ secrets.IP }} <<EOF
+        kubectl exec -n mlrun $jupyter_service -- jupyter nbconvert --to notebook --execute /home/jovyan/demos/mask-detection/3-automatic-pipeline.ipynb --output=/home/jovyan/demos/mask-detection/3-automatic-pipeline-out.ipynb 
+	 echo All notebooks ran successfully
         cd
         rm -rf ce 2>/dev/null
         EOF
-        rm -rf mlrun.pem
+	 rm -rf mlrun.pem
   
   # commented out for now, takes too long to pull images
   # perhaps we can invoke it via workflow dispatch or as a nightly job
