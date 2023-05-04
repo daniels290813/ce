@@ -20,7 +20,7 @@ jobs:
       - name: Run ah lint
         working-directory: ./charts/mlrun-ce
         run: ah lint
-  ssh:
+  ci-runner:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout code
@@ -35,7 +35,7 @@ jobs:
       run: sudo scp -r -o StrictHostKeyChecking=no -i mlrun.pem  /home/runner/work/ce ${{ secrets.USERNAME }}@${{ secrets.IP }}:/home/ubuntu/ce
     - name: Run commands on remote machine
       run: |
-        echo "ClientAliveInterval 0" | sudo tee -a /etc/ssh/sshd_config
+        echo "ServerAliveInterval 1800" >> ~/.ssh/config
         sshpass ssh -o StrictHostKeyChecking=no -i  mlrun.pem ${{ secrets.USERNAME }}@${{ secrets.IP }} <<EOF
         # CLEANUP
         echo "helm uninstall mlrun-ce"
@@ -44,12 +44,9 @@ jobs:
         helm uninstall -n mlrun monitoring || echo true
         echo "delete pv, pvc from mlrun"
         kubectl delete all --all -n mlrun
-        
         echo "deleting mlrun namepsace";
         kubectl delete namespace mlrun || echo true
-        
-        #export host_ip=`ifconfig ens5 | grep -i mask | awk '{print $2}'| cut -f2 -d:`
-        
+                
         # CE INSTALLATION
         cd ce/ce/charts/mlrun-ce
         echo "helm dependency update"
@@ -73,27 +70,16 @@ jobs:
         --set nuclio.dashboard.externalIPAddresses[0]=${{ secrets.INTERNAL_IP }}  \
         --wait --debug --timeout=1h .
 
-        # RUNNING DEMOS FROM JUPYTER POD
-        kubectl -n mlrun get pods
-        kubectl -n mlrun get pods --no-headers -o custom-columns=":metadata.name"|grep jupyter| awk '{print $1}'
-        kubectl -n mlrun get pods -o name|grep jupyter|head -n 1| cut -d / -f 2 
-        
+        # RUNNING DEMOS FROM JUPYTER POD      
         jupyter_service=\$(kubectl -n mlrun get pods -o name|grep jupyter|head -n 1| cut -d / -f 2)
         echo "JUPYTER : \$jupyter_service"
-        
-        #jupyter_service="$(kubectl -n mlrun get pods --no-headers -o custom-columns=':metadata.name'|grep jupyter| awk '{print $1}')"
-        #echo 'JUPYTER : $jupyter_service'
-        
         echo "creating script that run demos"
         echo "echo Running CE supported notebooks;
-              ls;
-              pwd;
               echo news-article-nlp;
               cd demos/news-article-nlp;
               jupyter nbconvert --to notebook --execute news_article_nlp.ipynb --output=news_article_nlp-out.ipynb
               echo mask-detection;
               cd ../mask-detection;
-              jupyter nbconvert --to script 1-training-and-evaluation.ipynb;
               jupyter nbconvert --to notebook --execute 1-training-and-evaluation.ipynb --output=1-training-and-evaluation-out.ipynb
               jupyter nbconvert --to notebook --execute 2-serving.ipynb --output=2-serving-out.ipynb
               jupyter nbconvert --to notebook --execute 3-automatic-pipeline.ipynb --output=3-automatic-pipeline-out.ipynb
@@ -104,10 +90,8 @@ jobs:
         kubectl cp demos_script.sh mlrun/\$jupyter_service:/home/jovyan/demos_script.sh
         echo "running demos script"
         kubectl exec -n mlrun \$jupyter_service -- bash /home/jovyan/demos_script.sh
-        echo "CE demos ci finished"
-        
-        ###########################
-        cd;
+        echo "CE demos ci finished"        
+        cd
         rm -rf ce 2>/dev/null
         EOF
         rm -rf mlrun.pem
