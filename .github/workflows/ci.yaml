@@ -36,9 +36,6 @@ jobs:
       run: sudo scp -r -o StrictHostKeyChecking=no -i mlrun.pem  /home/runner/work/ce ${{ secrets.USERNAME }}@${{ secrets.IP }}:/home/ubuntu/ce
     - name: Cleaning instance
       run: |
-        mkdir -p ~/.ssh
-        echo "ServerAliveInterval 1800" >> ~/.ssh/config
-        #echo "ServerAliveInterval 1800" | sudo tee -a /etc/ssh/sshd_config
         sshpass ssh -o StrictHostKeyChecking=no -i  mlrun.pem ${{ secrets.USERNAME }}@${{ secrets.IP }} <<EOF
         # CLEANUP
         echo "helm uninstall mlrun-ce"
@@ -80,7 +77,7 @@ jobs:
 
     - name: Run demos from Jupyter pod notebook news_article_nlp
       run: |
-        sshpass ssh -o StrictHostKeyChecking=no -i mlrun.pem ${{ secrets.USERNAME }}@${{ secrets.IP }} <<EOF
+        sshpass ssh -o ServerAliveInterval=600 -o ServerAliveCountMax=5 -o StrictHostKeyChecking=no -i mlrun.pem ${{ secrets.USERNAME }}@${{ secrets.IP }} <<EOF
         # Get the name of the Jupyter pod
         jupyter_service=\$(kubectl -n mlrun get pods -o name | grep jupyter | head -n 1 | cut -d / -f 2)
         echo "Jupyter pod name: \$jupyter_service"
@@ -95,7 +92,7 @@ jobs:
     
     - name: Run demos from Jupyter pod notebook 1-training-and-evaluation.ipynb
       run: |
-        sshpass ssh -o StrictHostKeyChecking=no -i mlrun.pem ${{ secrets.USERNAME }}@${{ secrets.IP }} <<EOF
+        sshpass ssh -o ServerAliveInterval=600 -o ServerAliveCountMax=5 -o StrictHostKeyChecking=no -i mlrun.pem ${{ secrets.USERNAME }}@${{ secrets.IP }} <<EOF
         # Get the name of the Jupyter pod
         jupyter_service=\$(kubectl -n mlrun get pods -o name | grep jupyter | head -n 1 | cut -d / -f 2)
         echo "Jupyter pod name: \$jupyter_service"
@@ -108,7 +105,7 @@ jobs:
         EOF
     - name: Run demos from Jupyter pod notebook 2-serving.ipynb
       run: |
-        sshpass ssh -o StrictHostKeyChecking=no -i mlrun.pem ${{ secrets.USERNAME }}@${{ secrets.IP }} <<EOF
+        sshpass ssh -o ServerAliveInterval=600 -o ServerAliveCountMax=5 -o StrictHostKeyChecking=no -i mlrun.pem ${{ secrets.USERNAME }}@${{ secrets.IP }} <<EOF
         # Get the name of the Jupyter pod
         jupyter_service=\$(kubectl -n mlrun get pods -o name | grep jupyter | head -n 1 | cut -d / -f 2)
         echo "Jupyter pod name: \$jupyter_service"
@@ -120,7 +117,7 @@ jobs:
         EOF
     - name: Run demos from Jupyter pod notebook 3-automatic-pipeline.ipynb
       run: |
-        sshpass ssh -o StrictHostKeyChecking=no -i mlrun.pem ${{ secrets.USERNAME }}@${{ secrets.IP }} <<EOF
+        sshpass ssh -o ServerAliveInterval=600 -o ServerAliveCountMax=5 -o StrictHostKeyChecking=no -i mlrun.pem ${{ secrets.USERNAME }}@${{ secrets.IP }} <<EOF
         # Get the name of the Jupyter pod
         jupyter_service=\$(kubectl -n mlrun get pods -o name | grep jupyter | head -n 1 | cut -d / -f 2)
         echo "Jupyter pod name: \$jupyter_service"
