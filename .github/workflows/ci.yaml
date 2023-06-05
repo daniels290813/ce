@@ -93,7 +93,7 @@ jobs:
         # Clean up after the notebook run
         # End of SSH commands
         EOF 
-        > output.log 2>&1 &
+        > output.log
     
     - name: Run demos from Jupyter pod notebook 1-training-and-evaluation.ipynb
       run: |
