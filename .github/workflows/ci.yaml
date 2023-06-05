@@ -26,12 +26,12 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
-#     - name: Extract private key
-#       run: echo "${{ secrets.MLRUN_PEM }}" > mlrun.pem
-#     - name: Set permissions on key
-#       run: chmod 400 mlrun.pem
-#     - name: Install sshpass
-#       run: sudo apt-get install -y sshpass
+    - name: Extract private key
+      run: echo "${{ secrets.MLRUN_PEM }}" > mlrun.pem
+    - name: Set permissions on key
+      run: chmod 400 mlrun.pem
+    - name: Install sshpass
+      run: sudo apt-get install -y sshpass
 #     - name: Copy folder to remote machine
 #       run: |
 #         sshpass ssh -o StrictHostKeyChecking=no -i  mlrun.pem ${{ secrets.USERNAME }}@${{ secrets.IP }} <<EOF
