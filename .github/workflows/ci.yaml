@@ -87,7 +87,7 @@ jobs:
         
         # Run the notebook and output the results
         echo "Running notebook..."
-        kubectl exec -n mlrun \$jupyter_service -- jupyter nbconvert --to notebook --execute /home/jovyan/demos/news-article-nlp/news_article_nlp.ipynb --ExecutePreprocessor.kernel_name=python3 --output=/home/jovyan/demos/news-article-nlp/news_article_nlp-out.ipynb 2>/dev/null
+        kubectl exec --request-timeout=3600s -n mlrun \$jupyter_service -- jupyter nbconvert --to notebook --execute /home/jovyan/demos/news-article-nlp/news_article_nlp.ipynb --ExecutePreprocessor.kernel_name=python3 --output=/home/jovyan/demos/news-article-nlp/news_article_nlp-out.ipynb 2>/dev/null
         echo "done first stage" 
         # Clean up after the notebook run
         # End of SSH commands
@@ -102,7 +102,7 @@ jobs:
         
         # Run the notebook and output the results
         echo "Running notebook..."
-        kubectl exec -n mlrun \$jupyter_service -- jupyter nbconvert --to notebook --execute /home/jovyan/demos/mask-detection/1-training-and-evaluation.ipynb --ExecutePreprocessor.kernel_name=python3 --output=/home/jovyan/demos/mask-detection/1-training-and-evaluation.ipynb
+        kubectl exec --request-timeout=3600s -n mlrun \$jupyter_service -- jupyter nbconvert --to notebook --execute /home/jovyan/demos/mask-detection/1-training-and-evaluation.ipynb --ExecutePreprocessor.kernel_name=python3 --output=/home/jovyan/demos/mask-detection/1-training-and-evaluation.ipynb
           
           # End of SSH commands
         EOF
@@ -115,7 +115,7 @@ jobs:
         
         # Run the notebook and output the results
         echo "Running notebook..."
-        kubectl exec -n mlrun \$jupyter_service -- jupyter nbconvert --to notebook --execute /home/jovyan/demos/mask-detection/2-serving.ipynb --ExecutePreprocessor.kernel_name=python3 --output=/home/jovyan/demos/mask-detection/2-serving.ipynb
+        kubectl exec --request-timeout=3600s -n mlrun \$jupyter_service -- jupyter nbconvert --to notebook --execute /home/jovyan/demos/mask-detection/2-serving.ipynb --ExecutePreprocessor.kernel_name=python3 --output=/home/jovyan/demos/mask-detection/2-serving.ipynb
           
         EOF
     - name: Run demos from Jupyter pod notebook 3-automatic-pipeline.ipynb
@@ -127,7 +127,7 @@ jobs:
         
         # Run the notebook and output the results
         echo "Running notebook..."
-        kubectl exec -n mlrun \$jupyter_service -- jupyter nbconvert --to notebook --execute /home/jovyan/demos/mask-detection/3-automatic-pipeline.ipynb --ExecutePreprocessor.kernel_name=python3 --output=/home/jovyan/demos/mask-detection/3-automatic-pipeline.ipynb
+        kubectl exec --request-timeout=3600s -n mlrun \$jupyter_service -- jupyter nbconvert --to notebook --execute /home/jovyan/demos/mask-detection/3-automatic-pipeline.ipynb --ExecutePreprocessor.kernel_name=python3 --output=/home/jovyan/demos/mask-detection/3-automatic-pipeline.ipynb
         echo "CE demos ci finished"
         cd
         rm -rf ce 2>/dev/null
