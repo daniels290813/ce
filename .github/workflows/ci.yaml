@@ -79,20 +79,29 @@ jobs:
         --wait --debug --timeout=1h .
         EOF
 
+    - name: executing remote ssh commands using password
+      uses: appleboy/ssh-action@v0.1.10
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        password: ${{ secrets.PASSWORD }}
+        script: whoami
+
+
     - name: Run demos from Jupyter pod notebook news_article_nlp
       run: |
-        sshpass ssh -o ServerAliveInterval=600 -o ServerAliveCountMax=5 -o StrictHostKeyChecking=no -i mlrun.pem ${{ secrets.USERNAME }}@${{ secrets.IP }} <<EOF
+        nohup sshpass ssh -o StrictHostKeyChecking=no -i mlrun.pem ${{ secrets.USERNAME }}@${{ secrets.IP }} <<EOF
         # Get the name of the Jupyter pod
         jupyter_service=\$(kubectl -n mlrun get pods -o name | grep jupyter | head -n 1 | cut -d / -f 2)
         echo "Jupyter pod name: \$jupyter_service"
         
         # Run the notebook and output the results
         echo "Running notebook..."
-        kubectl exec --request-timeout=3600s -n mlrun \$jupyter_service -- jupyter nbconvert --to notebook --execute /home/jovyan/demos/news-article-nlp/news_article_nlp.ipynb --ExecutePreprocessor.kernel_name=python3 --output=/home/jovyan/demos/news-article-nlp/news_article_nlp-out.ipynb 2>/dev/null
+        kubectl exec --request-timeout=3600s -n mlrun \$jupyter_service -- jupyter nbconvert --to notebook --execute /home/jovyan/demos/news-article-nlp/news_article_nlp.ipynb --ExecutePreprocessor.kernel_name=python3 --output=/home/jovyan/demos/news-article-nlp/news_article_nlp-out.ipynb
         echo "done first stage" 
         # Clean up after the notebook run
         # End of SSH commands
-        EOF
+        EOF > output.log 2>&1 &
     
     - name: Run demos from Jupyter pod notebook 1-training-and-evaluation.ipynb
       run: |
