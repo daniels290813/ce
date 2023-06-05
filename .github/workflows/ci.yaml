@@ -81,7 +81,7 @@ jobs:
 
     - name: Run demos from Jupyter pod notebook news_article_nlp
       run: |
-        nohup sshpass ssh -o StrictHostKeyChecking=no -i mlrun.pem ${{ secrets.USERNAME }}@${{ secrets.IP }} <<EOF
+        nohup ssh -o StrictHostKeyChecking=no -i mlrun.pem ${{ secrets.USERNAME }}@${{ secrets.IP }} <<EOF
         # Get the name of the Jupyter pod
         jupyter_service=\$(kubectl -n mlrun get pods -o name | grep jupyter | head -n 1 | cut -d / -f 2)
         echo "Jupyter pod name: \$jupyter_service"
