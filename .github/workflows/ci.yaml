@@ -81,14 +81,14 @@ jobs:
 
     - name: Run demos from Jupyter pod notebook news_article_nlp
       run: |
-        nohup ssh -o StrictHostKeyChecking=no -i mlrun.pem ${{ secrets.USERNAME }}@${{ secrets.IP }} <<EOF
+        ssh -o StrictHostKeyChecking=no -i mlrun.pem ${{ secrets.USERNAME }}@${{ secrets.IP }} <<EOF
         # Get the name of the Jupyter pod
         jupyter_service=\$(kubectl -n mlrun get pods -o name | grep jupyter | head -n 1 | cut -d / -f 2)
         echo "Jupyter pod name: \$jupyter_service"
         
         # Run the notebook and output the results
         echo "Running notebook..."
-        kubectl exec --request-timeout=3600s -n mlrun \$jupyter_service -- jupyter nbconvert --to notebook --execute /home/jovyan/demos/news-article-nlp/news_article_nlp.ipynb --ExecutePreprocessor.kernel_name=python3 --output=/home/jovyan/demos/news-article-nlp/news_article_nlp-out.ipynb
+        kubectl exec --request-timeout=3600s -n mlrun \$jupyter_service -- nohup jupyter nbconvert --execute /home/jovyan/demos/news-article-nlp/news_article_nlp.ipynb --ExecutePreprocessor.kernel_name=python3 > output.log 2>&1 &
         echo "done first stage" 
         # Clean up after the notebook run
         # End of SSH commands
