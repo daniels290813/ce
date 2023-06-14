@@ -52,6 +52,14 @@ jobs:
         kubectl delete namespace mlrun || echo true
         EOF
         
+    - name: Creating mlrun namespace
+      run: |
+        sshpass ssh -o StrictHostKeyChecking=no -i  mlrun.pem ${{ secrets.USERNAME }}@${{ secrets.IP }} <<EOF
+        echo "create mlrun namepsace"
+        kubectl create namespace mlrun        
+        echo "k8s namespaces - $(kubectl get namespace)"
+        EOF
+        
     - name: Creating docker registry secret
       run: |
         sshpass ssh -o StrictHostKeyChecking=no -i  mlrun.pem ${{ secrets.USERNAME }}@${{ secrets.IP }} <<EOF
@@ -61,8 +69,7 @@ jobs:
         --docker-server ${{ secrets.DOCKER_SERVER }} \
         --docker-email ${{ secrets.DOCKER_EMAIL }}
         EOF
-        sudo scp -r -o StrictHostKeyChecking=no -i mlrun.pem  /home/runner/work/ce ${{ secrets.USERNAME }}@${{ secrets.IP }}:/home/ubuntu/ce
-        
+
     - name: CE installation
       run: |    
         # CE INSTALLATION
@@ -70,9 +77,6 @@ jobs:
         cd ce/ce/charts/mlrun-ce
         echo "helm dependency update"
         helm dependency update
-        echo "create mlrun namepsace"
-        kubectl create namespace mlrun        
-        echo "k8s namespaces - $(kubectl get namespace)"
         echo "installing community edition"
         helm install mlrun-ce --namespace mlrun \
         --set minio.resources.requests.memory="128Mi" \
