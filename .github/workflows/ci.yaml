@@ -32,7 +32,7 @@ jobs:
       run: chmod 400 mlrun.pem
     - name: Install sshpass
       run: sudo apt-get install -y sshpass
-    - name: Copy folder to remote machine
+    - name: Copy pem to remote machine
       run: |
         sshpass ssh -o StrictHostKeyChecking=no -i  mlrun.pem ${{ secrets.USERNAME }}@${{ secrets.IP }} <<EOF
         rm -rf /home/ubuntu/ce
@@ -51,7 +51,18 @@ jobs:
         echo "deleting mlrun namepsace";
         kubectl delete namespace mlrun || echo true
         EOF
-
+        
+    - name: Creating docker registry secret
+      run: |
+        sshpass ssh -o StrictHostKeyChecking=no -i  mlrun.pem ${{ secrets.USERNAME }}@${{ secrets.IP }} <<EOF
+        kubectl --namespace mlrun create secret docker-registry registry-credentials \
+        --docker-username ${{ secrets.DOCKER_USERNAME }} \
+        --docker-password ${{ secrets.DOCKER_PASSWORD }} \
+        --docker-server ${{ secrets.DOCKER_SERVER }} \
+        --docker-email ${{ secrets.DOCKER_EMAIL }}
+        EOF
+        sudo scp -r -o StrictHostKeyChecking=no -i mlrun.pem  /home/runner/work/ce ${{ secrets.USERNAME }}@${{ secrets.IP }}:/home/ubuntu/ce
+        
     - name: CE installation
       run: |    
         # CE INSTALLATION
@@ -73,21 +84,21 @@ jobs:
         --set  mlrun.httpDB.dirPath="/mlrun/db" \
         --set  mlrun.httpDB.dsn="sqlite:////mlrun/db/mlrun.db?check_same_thread=false"  \
         --set  mlrun.httpDB.oldDsn=""  \
-        --set global.registry.url=${{ secrets.INTERNAL_IP }}:5000  --set global.registry.secretName=""   \
+        --set global.registry.url=${{ secrets.DOCKER_URL }}  --set global.registry.secretName=registry-credentials   \
         --set global.externalHostAddress=${{ secrets.INTERNAL_IP }}  \
         --set nuclio.dashboard.externalIPAddresses[0]=${{ secrets.INTERNAL_IP }}  \
         --wait --debug --timeout=1h .
         EOF
 
-#     - name: executing remote ssh commands using password
-#       uses: appleboy/ssh-action@v0.1.10
-#       with:
-#         host: ${{ secrets.IP }}
-#         username: ${{ secrets.USERNAME }}
-#         key: ${{ secrets.MLRUN_PEM }}
-#         script: |
-#           jupyter_service=$(kubectl -n mlrun get pods -o name | grep jupyter | head -n 1 | cut -d / -f 2)
-#           kubectl exec -n mlrun $jupyter_service -- jupyter nbconvert --to notebook --execute /home/jovyan/demos/news-article-nlp/news_article_nlp.ipynb --ExecutePreprocessor.kernel_name=python3 --output=/home/jovyan/demos/mask-detection/1-training-and-evaluation.ipynb
+    - name: executing remote ssh commands using password
+      uses: appleboy/ssh-action@v0.1.10
+      with:
+        host: ${{ secrets.IP }}
+        username: ${{ secrets.USERNAME }}
+        key: ${{ secrets.MLRUN_PEM }}
+        script: |
+          jupyter_service=$(kubectl -n mlrun get pods -o name | grep jupyter | head -n 1 | cut -d / -f 2)
+          kubectl exec -n mlrun $jupyter_service -- jupyter nbconvert --to notebook --execute /home/jovyan/demos/news-article-nlp/news_article_nlp.ipynb --ExecutePreprocessor.kernel_name=python3 --output=/home/jovyan/demos/mask-detection/1-training-and-evaluation.ipynb
 
 #     - name: Run demos from Jupyter pod notebook news_article_nlp
 #       run: |
